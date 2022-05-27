@@ -4,7 +4,7 @@ class FileUtil:
     def remove_extension(filename):
         if filename is None:
             return None
-        filename = str(filename)
+        filename = str(filename).strip()
         filename = filename.split('.')[0]
         return filename
 
@@ -12,7 +12,7 @@ class FileUtil:
     def to_avro(filename):
         if filename is None:
             return None
-        filename = str(filename)
+        filename = str(filename).strip()
         filename = filename.split('.')[0]
         filename = filename + ".avro"
         return filename
@@ -21,7 +21,7 @@ class FileUtil:
     def to_parquet(filename):
         if filename is None:
             return None
-        filename = str(filename)
+        filename = str(filename).strip()
         filename = filename.split('.')[0]
         filename = filename + ".parquet"
         return filename
@@ -31,7 +31,7 @@ class FileUtil:
         if filename is None:
             return False
         extension = str(".TXT")
-        filename = str(filename).upper()
+        filename = str(filename).strip().upper()
         return extension in filename
 
     @staticmethod
@@ -39,7 +39,7 @@ class FileUtil:
         if filename is None:
             return False
         extension = str(".CSV")
-        filename = str(filename).upper()
+        filename = str(filename).strip().upper()
         return extension in filename
 
     @staticmethod
@@ -47,7 +47,7 @@ class FileUtil:
         if filename is None:
             return False
         extension = str(".PARQUET")
-        filename = str(filename).upper()
+        filename = str(filename).strip().upper()
         return extension in filename
 
     @staticmethod
@@ -55,7 +55,7 @@ class FileUtil:
         if filename is None:
             return False
         extension = str(".ORC")
-        filename = str(filename).upper()
+        filename = str(filename).strip().upper()
         return extension in filename
 
     @staticmethod
@@ -63,7 +63,7 @@ class FileUtil:
         if filename is None:
             return False
         extension = str(".AVRO")
-        filename = str(filename).upper()
+        filename = str(filename).strip().upper()
         return extension in filename
 
     @staticmethod
@@ -71,7 +71,7 @@ class FileUtil:
         if filename is None:
             return False
         extension = str(".JSON")
-        filename = str(filename).upper()
+        filename = str(filename).strip().upper()
         return extension in filename
 
     @staticmethod
@@ -79,5 +79,5 @@ class FileUtil:
         if filename is None:
             return False
         extension = str(".XML")
-        filename = str(filename).upper()
+        filename = str(filename).strip().upper()
         return extension in filename

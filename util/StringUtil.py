@@ -31,7 +31,8 @@ class StringUtil:
 
     @staticmethod
     def replace(value, old, new):
-        if value is None: return None
+        if value is None:
+            return None
         result = str(value).replace(old, new)
         return result
 
@@ -74,7 +75,7 @@ class StringUtil:
     def get_empty_as_none(value):
         if value is None:
             return None
-        result = None if StringUtil.isEmpty(value) else value
+        result = None if StringUtil.is_empty(value) else value
         return result
 
     @staticmethod
@@ -173,6 +174,8 @@ class StringUtil:
         if value is None:
             return None
         result = StringUtil.clean(value)
+        result = str(result).replace('\"', '"')
+        result = str(result).replace('"', '\"')
         result = json.loads(result)
         return result
 

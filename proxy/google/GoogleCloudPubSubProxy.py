@@ -49,9 +49,6 @@ class GoogleCloudPubSubProxy(object):
         data = ListUtil.remove_none(data)
 
         if ListUtil.is_empty(data):
-            batch_path = BatchPath()
-            analytical_path = AnalyticalPath()
-
             stream_flow_configuration = StreamFlowConfigurationFactory.get_instance().build()
 
             stream_path = StreamPath()
@@ -74,8 +71,8 @@ class GoogleCloudPubSubProxy(object):
             content.set_schema(stream_flow_configuration.get_schema())
 
             data = Data()
-            data.set_batch_path(batch_path)
-            data.set_analytical_path(analytical_path)
+            data.set_batch_path(BatchPath())
+            data.set_analytical_path(AnalyticalPath())
             data.set_stream_path(stream_path)
             data.set_content(content)
 
@@ -126,10 +123,8 @@ class GoogleCloudPubSubProxy(object):
         return data
 
     def find_all(self):
-        batch_path = BatchPath()
-        analytical_path = AnalyticalPath()
-
         stream_flow_configuration = StreamFlowConfigurationFactory.get_instance().build()
+
         stream_path = StreamPath()
         stream_path.set_topic(StringUtil.clean(stream_flow_configuration.get_from_topic()))
         stream_path.set_company(StringUtil.clean(stream_flow_configuration.get_company()))
@@ -150,8 +145,8 @@ class GoogleCloudPubSubProxy(object):
         content.set_schema(stream_flow_configuration.get_schema())
 
         data = Data()
-        data.set_batch_path(batch_path)
-        data.set_analytical_path(analytical_path)
+        data.set_batch_path(BatchPath())
+        data.set_analytical_path(AnalyticalPath())
         data.set_stream_path(stream_path)
         data.set_content(content)
 
@@ -166,9 +161,6 @@ class GoogleCloudPubSubProxy(object):
 
         result = ListUtil.get_none_as_empty(None)
         for item in stream_paths:
-            batch_path = ObjectUtil.copy(data.get_batch_path())
-            analytical_path = ObjectUtil.copy(data.get_analytical_path())
-
             parameters = StringUtil.split(item, '/')
             stream_path = StreamPath()
             stream_path.set_topic(StringUtil.clean(ListUtil.at(parameters, 0)))
@@ -187,11 +179,20 @@ class GoogleCloudPubSubProxy(object):
             stream_path.set_execution(StringUtil.clean(ListUtil.at(parameters, 13)))
             stream_path.set_message_id(StringUtil.clean(ListUtil.at(parameters, 14)))
 
+            batch_path = ObjectUtil.copy(data.get_batch_path())
+            analytical_path = ObjectUtil.copy(data.get_analytical_path())
+
             content = Content()
             content.set_schema(data.get_content().get_schema())
             content.set_as_dataframe(data.get_content().get_as_dataframe())
 
-            result.append(Data(batch_path, analytical_path, stream_path, content))
+            new_data = Data()
+            new_data.set_batch_path(batch_path)
+            new_data.set_analytical_path(analytical_path)
+            new_data.set_stream_path(stream_path)
+            new_data.set_content(content)
+
+            result.append(new_data)
 
         return result
 

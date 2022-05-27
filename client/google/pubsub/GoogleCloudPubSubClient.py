@@ -130,13 +130,13 @@ class GoogleCloudPubSubClient(object):
             subscription = GoogleCloudPubSubUtil.generate_uuid4()
             if not self.__subscription_exists(subscription):
                 break
-        topic = 'projects/{0}/topics/{1}'.format(
-            GoogleCloudPlataformUtil.get_project_id(),
-            GoogleCloudPubSubUtil.remove_invalid_characters(topic)
-        )
         name = 'projects/{0}/subscriptions/{1}'.format(
             GoogleCloudPlataformUtil.get_project_id(),
             GoogleCloudPubSubUtil.remove_invalid_characters(subscription)
+        )
+        topic = 'projects/{0}/topics/{1}'.format(
+            GoogleCloudPlataformUtil.get_project_id(),
+            GoogleCloudPubSubUtil.remove_invalid_characters(topic)
         )
         self.__subscriber.create_subscription(name=name, topic=topic)
         while True:  # check if already create

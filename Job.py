@@ -1,7 +1,6 @@
 from client.google.bigquery.GoogleBigQueryClient import GoogleBigQueryClient
 from client.google.pubsub.GoogleCloudPubSubClient import GoogleCloudPubSubClient
 from client.google.storage.GoogleCloudStorageClient import GoogleCloudStorageClient
-from client.google.manage_resource.GoogleCloudManageResourceClient import GoogleCloudManageResourceClient
 
 from proxy.google.GoogleCloudStorageProxy import GoogleCloudStorageProxy
 from proxy.google.tracking.TrackingGoogleCloudStorageProxy import TrackingGoogleCloudStorageProxy
@@ -87,9 +86,7 @@ class Job(object):
         self.__google_cloud_storage_proxy = ExceptionHandlingGoogleCloudStorageProxy(self.__google_cloud_storage_proxy)
 
         self.__google_bigquery_client = GoogleBigQueryClient()
-        self.__google_cloud_manage_resource_client = GoogleCloudManageResourceClient()
-        self.__google_bigquery_proxy = GoogleBigQueryProxy(self.__google_bigquery_client,
-                                                           self.__google_cloud_manage_resource_client)
+        self.__google_bigquery_proxy = GoogleBigQueryProxy(self.__google_bigquery_client)
         self.__google_bigquery_proxy = TrackingGoogleBigQueryProxy(self.__google_bigquery_proxy)
         self.__google_bigquery_proxy = LoggingGoogleBigQueryProxy(self.__google_bigquery_proxy)
         self.__google_bigquery_proxy = MonitoringGoogleBigQueryProxy(self.__google_bigquery_proxy)

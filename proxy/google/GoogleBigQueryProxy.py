@@ -11,9 +11,8 @@ from factory.flow.AnalyticalFlowConfigurationFactory import AnalyticalFlowConfig
 
 
 class GoogleBigQueryProxy(object):
-    def __init__(self, google_bigquery_client, google_cloud_manage_resource_client):
+    def __init__(self, google_bigquery_client):
         self.__google_bigquery_client = google_bigquery_client
-        self.__google_cloud_manage_resource_client = google_cloud_manage_resource_client
 
     def count(self, data):
         analytical_path = data.get_analytical_path()
@@ -24,12 +23,11 @@ class GoogleBigQueryProxy(object):
         return result
 
     def delete(self, data):
-        batch_path = ObjectUtil.copy(data.get_batch_path())
-
         analytical_path = StringUtil.clean(data.get_analytical_path())
         self.__google_bigquery_client.delete(analytical_path)
-        analytical_path = ObjectUtil.copy(data.get_analytical_path())
 
+        batch_path = ObjectUtil.copy(data.get_batch_path())
+        analytical_path = ObjectUtil.copy(data.get_analytical_path())
         stream_path = ObjectUtil.copy(data.get_stream_path())
 
         content = Content()
@@ -50,24 +48,17 @@ class GoogleBigQueryProxy(object):
         data = ListUtil.remove_none(data)
 
         if ListUtil.is_empty(data):
-            batch_path = BatchPath()
-
             analytical_configuration = AnalyticalFlowConfigurationFactory.get_instance().build()
             analytical_path = AnalyticalPath()
             analytical_path.set_dataset(StringUtil.clean(analytical_configuration.get_from_dataset()))
             analytical_path.set_table(None)
 
-            stream_path = StreamPath()
-
-            content = Content()
-
             data = Data()
-            data.set_batch_path(batch_path)
+            data.set_batch_path(BatchPath())
             data.set_analytical_path(analytical_path)
-            data.set_stream_path(stream_path)
-            data.set_content(content)
+            data.set_stream_path(StreamPath())
+            data.set_content(Content())
 
-            data.set_analytical_path(analytical_path)
             data = self.list(data)
 
         data = ListUtil.map(lambda item: self.delete(item), data)
@@ -82,7 +73,8 @@ class GoogleBigQueryProxy(object):
     def find(self, data):
         spark_session = SparkSessionFactory.get_instance().build()
 
-        table = StringUtil.replace(data.get_analytical_path(), '/', '.')
+        table = StringUtil.clean(data.get_analytical_path())
+        table = StringUtil.replace(table, '/', '.')
         dataframe = spark_session.read\
             .format('bigquery') \
             .option('table', table) \
@@ -105,21 +97,15 @@ class GoogleBigQueryProxy(object):
         return data
 
     def find_all(self):
-        batch_path = BatchPath()
-
         analytical_configuration = AnalyticalFlowConfigurationFactory.get_instance().build()
         analytical_path = AnalyticalPath()
         analytical_path.set_dataset(analytical_configuration.get_from_dataset())
 
-        stream_path = StreamPath()
-
-        content = Content()
-
         data = Data()
-        data.set_batch_path(batch_path)
+        data.set_batch_path(BatchPath())
         data.set_analytical_path(analytical_path)
-        data.set_stream_path(stream_path)
-        data.set_content(content)
+        data.set_stream_path(StreamPath())
+        data.set_content(Content())
 
         result = self.list(data)
         result = ListUtil.map(lambda item: self.find(item), result)
@@ -127,29 +113,25 @@ class GoogleBigQueryProxy(object):
         return result
 
     def list(self, data):
-        analytical_path = data.get_analytical_path()
-        analytical_path = StringUtil.clean(analytical_path)
+        analytical_path = StringUtil.clean(data.get_analytical_path())
         analytical_paths = self.__google_bigquery_client.list(analytical_path)
         analytical_paths = ListUtil.remove(analytical_paths, analytical_path)
 
         result = ListUtil.get_none_as_empty(None)
         for item in analytical_paths:
-            batch_path = ObjectUtil.copy(data.get_batch_path())
-
             parameters = StringUtil.split(item, '/')
             analytical_path = AnalyticalPath()
             analytical_path.set_dataset(StringUtil.clean(ListUtil.at(parameters, 0)))
             analytical_path.set_table(StringUtil.clean(ListUtil.at(parameters, 1)))
 
+            batch_path = ObjectUtil.copy(data.get_batch_path())
             stream_path = ObjectUtil.copy(data.get_stream_path())
-
-            content = Content()
 
             data = Data()
             data.set_batch_path(batch_path)
             data.set_analytical_path(analytical_path)
             data.set_stream_path(stream_path)
-            data.set_content(content)
+            data.set_content(Content())
 
             result.append(data)
 
@@ -157,7 +139,8 @@ class GoogleBigQueryProxy(object):
 
     def save(self, data):
         dataframe = data.get_content().get_as_dataframe()
-        table = StringUtil.replace(data.get_analytical_path(), '/', '.')
+        table = StringUtil.clean(data.get_analytical_path())
+        table = StringUtil.replace(table, '/', '.')
 
         dataframe.write\
             .format('bigquery') \

@@ -5,10 +5,6 @@ import random
 
 
 class GoogleCloudPubSubUtil(object):
-
-    @staticmethod
-    def subscription_id(subscription):
-
     @staticmethod
     def clean(topic):
         if topic is None:

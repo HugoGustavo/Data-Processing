@@ -5,7 +5,7 @@ from util.StringUtil import StringUtil
 class StreamPath(object):
     def __init__(self, topic=None, company=None, region=None, business_unit=None, vice_presidency=None, domain=None,
                  subdomain=None, context=None, pipeline=None, data_source=None, year=None, month=None, day=None,
-                 execution=None, messageId=None):
+                 execution=None, message_id=None):
         self.__topic = topic
         self.__company = company
         self.__region = region
@@ -20,7 +20,7 @@ class StreamPath(object):
         self.__month = month
         self.__day = day
         self.__execution = execution
-        self.__messageId = messageId
+        self.__message_id = message_id
 
     def get_topic(self):
         return self.__topic
@@ -113,10 +113,10 @@ class StreamPath(object):
         self.__execution = execution
 
     def get_message_id(self):
-        return self.__messageId
+        return self.__message_id
 
-    def set_message_id(self, messageId):
-        self.__messageId = messageId
+    def set_message_id(self, message_id):
+        self.__message_id = message_id
 
     def is_empty(self):
         return ObjectUtil.is_none(self.__topic) \
@@ -132,8 +132,7 @@ class StreamPath(object):
                or ObjectUtil.is_none(self.__year) \
                or ObjectUtil.is_none(self.__month) \
                or ObjectUtil.is_none(self.__day) \
-               or ObjectUtil.is_none(self.__execution) \
-               or ObjectUtil.is_none(self.__messageId)
+               or ObjectUtil.is_none(self.__execution)
 
     def __str__(self):
         if self.is_empty():
@@ -154,7 +153,7 @@ class StreamPath(object):
         result = result + 'dd=' + str(self.__day) + '/'
         result = result + str(self.__execution) + '/'
 
-        if StringUtil.is_not_empty(self.__messageId):
-            result = result + str(self.__messageId)
+        if StringUtil.is_not_empty(self.__message_id):
+            result = result + str(self.__message_id)
 
         return result

@@ -67,15 +67,11 @@ class GoogleCloudStorageProxy(object):
             batch_path.set_day(StringUtil.clean(batch_flow_configuration.get_day()))
             batch_path.set_execution(StringUtil.clean(batch_flow_configuration.get_execution()))
 
-            analytical_path = AnalyticalPath()
-            stream_path = StreamPath()
-            content = Content()
-
             data = Data()
             data.set_batch_path(batch_path)
-            data.set_analytical_path(analytical_path)
-            data.set_stream_path(stream_path)
-            data.set_content(content)
+            data.set_analytical_path(AnalyticalPath())
+            data.set_stream_path(StreamPath())
+            data.set_content(Content())
 
             data = self.list(data)
 
@@ -172,17 +168,13 @@ class GoogleCloudStorageProxy(object):
         batch_path.set_day(StringUtil.clean(batch_flow_configuration.get_day()))
         batch_path.set_execution(StringUtil.clean(batch_flow_configuration.get_execution()))
 
-        analytical_path = AnalyticalPath()
-
-        stream_path = StreamPath()
-
         content = Content()
         content.set_schema(batch_flow_configuration.get_schema())
 
         data = Data()
         data.set_batch_path(batch_path)
-        data.set_analytical_path(analytical_path)
-        data.set_stream_path(stream_path)
+        data.set_analytical_path(AnalyticalPath())
+        data.set_stream_path(StreamPath())
         data.set_content(content)
 
         data = self.list(data)
@@ -193,7 +185,7 @@ class GoogleCloudStorageProxy(object):
     def list(self, data):
         batch_path = StringUtil.clean(data.get_batch_path())
         batch_paths = self.__google_cloud_storage_client.list(batch_path)
-        batch_paths = ListUtil.filter(lambda item: PathUtil.is_not_folder(item), batch_paths)
+        batch_paths = ListUtil.filter(lambda item : PathUtil.is_not_folder(item), batch_paths)
         batch_paths = ListUtil.remove(batch_paths, batch_path)
 
         result = ListUtil.get_none_as_empty(None)
@@ -218,14 +210,19 @@ class GoogleCloudStorageProxy(object):
             batch_path.set_filename(StringUtil.clean(ListUtil.at(parameters, 14)))
 
             analytical_path = ObjectUtil.copy(data.get_analytical_path())
-
             stream_path = ObjectUtil.copy(data.get_stream_path())
 
             content = Content()
             content.set_schema(data.get_content().get_schema())
             content.set_as_dataframe(data.get_content().get_as_dataframe())
 
-            result.append(Data(batch_path, analytical_path, stream_path, content))
+            new_data = Data()
+            new_data.set_batch_path(batch_path)
+            new_data.set_analytical_path(analytical_path)
+            new_data.set_stream_path(stream_path)
+            new_data.set_content(content)
+
+            result.append(new_data)
 
         return result
 
@@ -233,8 +230,8 @@ class GoogleCloudStorageProxy(object):
         filename = data.get_batch_path().get_filename()
         dataframe = data.get_content().get_as_dataframe()
 
-        batch_path = StringUtil.clean("gs://")
-        batch_path = StringUtil.concat(batch_path, StringUtil.clean(data.get_batch_path()))
+        batch_path = StringUtil.clean(data.get_batch_path())
+        batch_path = StringUtil.concat("gs://", batch_path)
 
         if FileUtil.is_txt(filename):
             dataframe.write\

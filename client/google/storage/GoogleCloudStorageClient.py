@@ -67,7 +67,7 @@ class GoogleCloudStorageClient(object):
 
     def upload(self, batch_path, content):
         if GoogleCloudPlataformUtil.is_empty(batch_path):
-            raise ValueError('Lake path cannot be empty')
+            raise ValueError('Batch path cannot be empty')
         if GoogleCloudPlataformUtil.is_empty(content):
             raise ValueError('Content cannot be empty')
 
@@ -86,7 +86,7 @@ class GoogleCloudStorageClient(object):
 
     def download(self, batch_path):
         if GoogleCloudPlataformUtil.is_empty(batch_path):
-            raise ValueError('Lake path cannot be empty')
+            raise ValueError('Batch path cannot be empty')
 
         batch_path = GoogleCloudStorageUtil.clean(batch_path)
         batch_path = GoogleCloudStorageUtil.remove_protocol(batch_path)
