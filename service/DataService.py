@@ -83,16 +83,15 @@ class DataService(object):
     def find_all(self):
         batch_flow_configuration = BatchFlowConfigurationFactory.get_instance().build()
         analytical_flow_configuration = AnalyticalFlowConfigurationFactory.get_instance().build()
-        stream_flow_configuration = StreamFlowConfigurationFactory.get_instance().build()
 
         on_data_lake = StringUtil.is_not_empty(batch_flow_configuration.get_from_bucket())
         on_data_analytical = StringUtil.is_not_empty(analytical_flow_configuration.get_from_dataset())
 
         result = ListUtil.get_none_as_empty(None)
         if on_data_lake:
-            result.append(self.__data_lake_proxy.find_all())
+            result.extend(self.__data_lake_proxy.find_all())
         if on_data_analytical:
-            result.append(self.__data_warehouse_proxy.find_all())
+            result.extend(self.__data_warehouse_proxy.find_all())
 
         result = ListUtil.get_none_as_empty(result)
         result = ListUtil.remove_none(result)
@@ -103,8 +102,11 @@ class DataService(object):
         if ObjectUtil.is_none(data):
             raise ValueError('Data cannot be None')
 
-        to_data_lake = ObjectUtil.is_not_none(data.get_batch_path())
-        to_data_analytical = ObjectUtil.is_not_none(data.get_analytical_path())
+        batch_flow_configuration = BatchFlowConfigurationFactory.get_instance().build()
+        analytical_flow_configuration = AnalyticalFlowConfigurationFactory.get_instance().build()
+
+        to_data_lake = StringUtil.is_not_empty(batch_flow_configuration.get_to_bucket())
+        to_data_analytical = StringUtil.is_not_empty(analytical_flow_configuration.get_to_dataset())
 
         result = None
         if to_data_lake:

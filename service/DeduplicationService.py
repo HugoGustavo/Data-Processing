@@ -18,16 +18,18 @@ class DeduplicationService(object):
         data = ListUtil.remove_none(ListUtil.get_as_list(data))
 
         result = ListUtil.get_none_as_empty(None)
+
         for item in data:
             batch_path = ObjectUtil.copy(item.get_batch_path())
             analytical_path = ObjectUtil.copy(item.get_analytical_path())
             stream_path = ObjectUtil.copy(item.get_stream_path())
 
             dataframe = item.get_content().get_as_dataframe()
-            dataframe = dataframe.dropDuplicate()
+            dataframe = dataframe.drop_duplicates() if dataframe else dataframe
 
             content = Content()
             content.set_as_dataframe(dataframe)
+            content.set_schema(dataframe.schema)
 
             result.append(Data(batch_path, analytical_path, stream_path, content))
 

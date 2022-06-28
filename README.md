@@ -1,7 +1,7 @@
-# Cloud Ecosystem Job
+# Cloud Ecosystem - Data Processing
 
-## A data-driven iniciative to processing data
-Cloud Ecosystem Job is a framework for creating PySpark codes capable of handling
+## A data-driven initiative to processing data
+Cloud Ecosystem - Data Processing is a framework for creating PySpark codes capable of handling
 data from different sources in a unified way.
 
 - Initially developed special for Google Cloud Platform. 

@@ -80,9 +80,9 @@ class TrackingDataService(object):
             batch_path.set_execution(StringUtil.clean(stream_path.get_execution()))
             batch_path.set_filename(StringUtil.clean(stream_path.get_message_id()))
 
-        to_bucket_staging = StringUtil.contains_ignore_case("STAGING", data.get_batch_path().get_bucket())
-        to_bucket_production = StringUtil.contains_ignore_case("PRODUCTION", data.get_batch_path().get_bucket())
-        to_topic_production = StringUtil.contains_ignore_case("PRODUCTION", data.get_stream_path().get_topic())
+        to_bucket_staging = StringUtil.contains_ignore_case("STAGING", batch_configuration.get_to_bucket())
+        to_bucket_curated = StringUtil.contains_ignore_case("CURATED", batch_configuration.get_to_bucket())
+        to_topic_curated = StringUtil.contains_ignore_case("CURATED", stream_configuration.get_to_topic())
 
         # Format File
         if data_is_not_none and to_bucket_staging:
@@ -91,29 +91,32 @@ class TrackingDataService(object):
             filename = FileUtil.to_avro(filename)
             batch_path.set_filename(filename)
 
-        if data_is_not_none and to_bucket_production:
+        if data_is_not_none and to_bucket_curated:
             batch_path = data.get_batch_path()
             filename = batch_path.get_filename()
             filename = FileUtil.to_parquet(filename)
             batch_path.set_filename(filename)
 
         # Remove unnecessary fields
-        if data_is_not_none and to_bucket_production:
+        if data_is_not_none and to_bucket_curated:
             content = data.get_content()
             dataframe = content.get_as_dataframe().drop("LAST_MODIFIED", "INGEST_DATE")
             content.set_as_dataframe(dataframe)
+            content.set_schema(dataframe.schema)
             data.set_content(content)
 
         if data_is_not_none and to_dataset:
             content = data.get_content()
             dataframe = content.get_as_dataframe().drop("LAST_MODIFIED", "INGEST_DATE")
             content.set_as_dataframe(dataframe)
+            content.set_schema(dataframe.schema)
             data.set_content(content)
 
-        if data_is_not_none and to_topic_production:
+        if data_is_not_none and to_topic_curated:
             content = data.get_content()
             dataframe = content.get_as_dataframe().drop("LAST_MODIFIED", "INGEST_DATE")
             content.set_as_dataframe(dataframe)
+            content.set_schema(dataframe.schema)
             data.set_content(content)
 
         result = self.__data_service.save_all(data)
@@ -150,27 +153,28 @@ class TrackingDataService(object):
 
         # make a copy of data
         if data_is_not_none and to_topic and not to_bucket:
-            batch_path = data.get_batch_path()
-            stream_path = data.get_stream_path()
-            batch_path.set_bucket(StringUtil.clean(stream_path.get_to_topic()))
-            batch_path.set_company(StringUtil.clean(stream_path.get_company()))
-            batch_path.set_region(StringUtil.clean(stream_path.get_region()))
-            batch_path.set_business_unit(StringUtil.clean(stream_path.get_business_unit()))
-            batch_path.set_vice_presidency(StringUtil.clean(stream_path.get_vice_presidency()))
-            batch_path.set_domain(StringUtil.clean(stream_path.get_domain()))
-            batch_path.set_subdomain(StringUtil.clean(stream_path.get_subdomain()))
-            batch_path.set_context(StringUtil.clean(stream_path.get_context()))
-            batch_path.set_pipeline(StringUtil.clean(stream_path.get_pipeline()))
-            batch_path.set_data_source(StringUtil.clean(stream_path.get_data_source()))
-            batch_path.set_year(StringUtil.clean(stream_path.get_year()))
-            batch_path.set_month(StringUtil.clean(stream_path.get_month()))
-            batch_path.set_day(StringUtil.clean(stream_path.get_day()))
-            batch_path.set_execution(StringUtil.clean(stream_path.get_execution()))
-            batch_path.set_filename(StringUtil.clean(stream_path.get_message_id()))
+            for item in ListUtil.get_as_list(data):
+                batch_path = item.get_batch_path()
+                stream_path = item.get_stream_path()
+                batch_path.set_bucket(StringUtil.clean(stream_path.get_to_topic()))
+                batch_path.set_company(StringUtil.clean(stream_path.get_company()))
+                batch_path.set_region(StringUtil.clean(stream_path.get_region()))
+                batch_path.set_business_unit(StringUtil.clean(stream_path.get_business_unit()))
+                batch_path.set_vice_presidency(StringUtil.clean(stream_path.get_vice_presidency()))
+                batch_path.set_domain(StringUtil.clean(stream_path.get_domain()))
+                batch_path.set_subdomain(StringUtil.clean(stream_path.get_subdomain()))
+                batch_path.set_context(StringUtil.clean(stream_path.get_context()))
+                batch_path.set_pipeline(StringUtil.clean(stream_path.get_pipeline()))
+                batch_path.set_data_source(StringUtil.clean(stream_path.get_data_source()))
+                batch_path.set_year(StringUtil.clean(stream_path.get_year()))
+                batch_path.set_month(StringUtil.clean(stream_path.get_month()))
+                batch_path.set_day(StringUtil.clean(stream_path.get_day()))
+                batch_path.set_execution(StringUtil.clean(stream_path.get_execution()))
+                batch_path.set_filename(StringUtil.clean(stream_path.get_message_id()))
 
-        to_bucket_staging = StringUtil.contains_ignore_case("STAGING", data.get_batch_path().get_bucket())
-        to_bucket_production = StringUtil.contains_ignore_case("PRODUCTION", data.get_batch_path().get_bucket())
-        to_topic_production = StringUtil.contains_ignore_case("PRODUCTION", data.get_stream_path().get_topic())
+        to_bucket_staging = StringUtil.contains_ignore_case("STAGING", batch_configuration.get_to_bucket())
+        to_bucket_curated = StringUtil.contains_ignore_case("CURATED", batch_configuration.get_to_bucket())
+        to_topic_curated = StringUtil.contains_ignore_case("CURATED",  stream_configuration.get_to_topic())
 
         # Format File
         if data_is_not_none and to_bucket_staging:
@@ -180,7 +184,7 @@ class TrackingDataService(object):
                 filename = FileUtil.to_avro(filename)
                 batch_path.set_filename(filename)
 
-        if data_is_not_none and to_bucket_production:
+        if data_is_not_none and to_bucket_curated:
             for item in ListUtil.get_as_list(data):
                 batch_path = item.get_batch_path()
                 filename = batch_path.get_filename()
@@ -188,11 +192,12 @@ class TrackingDataService(object):
                 batch_path.set_filename(filename)
 
         # Remove unnecessary fields
-        if data_is_not_none and to_bucket_production:
+        if data_is_not_none and to_bucket_curated:
             for item in ListUtil.get_as_list(data):
                 content = item.get_content()
                 dataframe = content.get_as_dataframe().drop("LAST_MODIFIED", "INGEST_DATE")
                 content.set_as_dataframe(dataframe)
+                content.set_schema(dataframe.schema)
                 item.set_content(content)
 
         if data_is_not_none and to_dataset:
@@ -200,13 +205,15 @@ class TrackingDataService(object):
                 content = item.get_content()
                 dataframe = content.get_as_dataframe().drop("LAST_MODIFIED", "INGEST_DATE")
                 content.set_as_dataframe(dataframe)
+                content.set_schema(dataframe.schema)
                 item.set_content(content)
 
-        if data_is_not_none and to_topic_production:
+        if data_is_not_none and to_topic_curated:
             for item in ListUtil.get_as_list(data):
                 content = item.get_content()
                 dataframe = content.get_as_dataframe().drop("LAST_MODIFIED", "INGEST_DATE")
                 content.set_as_dataframe(dataframe)
+                content.set_schema(dataframe.schema)
                 item.set_content(content)
 
         result = self.__data_service.save_all(data)

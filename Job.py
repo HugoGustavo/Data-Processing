@@ -1,5 +1,5 @@
 from client.google.bigquery.GoogleBigQueryClient import GoogleBigQueryClient
-from client.google.pubsub.GoogleCloudPubSubClient import GoogleCloudPubSubClient
+# from client.google.pubsub.GoogleCloudPubSubClient import GoogleCloudPubSubClient
 from client.google.storage.GoogleCloudStorageClient import GoogleCloudStorageClient
 
 from proxy.google.GoogleCloudStorageProxy import GoogleCloudStorageProxy
@@ -17,13 +17,13 @@ from proxy.google.monitoring.MonitoringGoogleBigQueryProxy import MonitoringGoog
 from proxy.google.security.SecurityGoogleBigQueryProxy import SecurityGoogleBigQueryProxy
 from proxy.google.exception_handling.ExceptionHandlingGoogleBigQueryProxy import ExceptionHandlingGoogleBigQueryProxy
 
-from proxy.google.GoogleCloudPubSubProxy import GoogleCloudPubSubProxy
-from proxy.google.tracking.TrackingGoogleCloudPubSubProxy import TrackingGoogleCloudPubSubProxy
-from proxy.google.logging.LoggingGoogleCloudPubSubProxy import LoggingGoogleCloudPubSubProxy
-from proxy.google.monitoring.MonitoringGoogleCloudPubSubProxy import MonitoringGoogleCloudPubSubProxy
-from proxy.google.security.SecurityGoogleCloudPubSubProxy import SecurityGoogleCloudPubSubProxy
-from proxy.google.exception_handling.ExceptionHandlingGoogleCloudPubSubProxy \
-    import ExceptionHandlingGoogleCloudPubSubProxy
+# from proxy.google.GoogleCloudPubSubProxy import GoogleCloudPubSubProxy from
+# proxy.google.tracking.TrackingGoogleCloudPubSubProxy import TrackingGoogleCloudPubSubProxy from
+# proxy.google.logging.LoggingGoogleCloudPubSubProxy import LoggingGoogleCloudPubSubProxy from
+# proxy.google.monitoring.MonitoringGoogleCloudPubSubProxy import MonitoringGoogleCloudPubSubProxy from
+# proxy.google.security.SecurityGoogleCloudPubSubProxy import SecurityGoogleCloudPubSubProxy from
+# proxy.google.exception_handling.ExceptionHandlingGoogleCloudPubSubProxy import
+# ExceptionHandlingGoogleCloudPubSubProxy
 
 from service.DataService import DataService
 from service.tracking.TrackingDataService import TrackingDataService
@@ -93,16 +93,15 @@ class Job(object):
         self.__google_bigquery_proxy = SecurityGoogleBigQueryProxy(self.__google_bigquery_proxy)
         self.__google_bigquery_proxy = ExceptionHandlingGoogleBigQueryProxy(self.__google_bigquery_proxy)
 
-        self.__google_cloud_pub_sub_client = GoogleCloudPubSubClient()
-        self.__google_cloud_pub_sub_proxy = GoogleCloudPubSubProxy(self.__google_cloud_pub_sub_client)
-        self.__google_cloud_pub_sub_proxy = TrackingGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
-        self.__google_cloud_pub_sub_proxy = LoggingGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
-        self.__google_cloud_pub_sub_proxy = MonitoringGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
-        self.__google_cloud_pub_sub_proxy = SecurityGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
-        self.__google_cloud_pub_sub_proxy = ExceptionHandlingGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
+        # self.__google_cloud_pub_sub_client = GoogleCloudPubSubClient()
+        # self.__google_cloud_pub_sub_proxy = GoogleCloudPubSubProxy(self.__google_cloud_pub_sub_client)
+        # self.__google_cloud_pub_sub_proxy = TrackingGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
+        # self.__google_cloud_pub_sub_proxy = LoggingGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
+        # self.__google_cloud_pub_sub_proxy = MonitoringGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
+        # self.__google_cloud_pub_sub_proxy = SecurityGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
+        # self.__google_cloud_pub_sub_proxy = ExceptionHandlingGoogleCloudPubSubProxy(self.__google_cloud_pub_sub_proxy)
 
-        self.__data_service = DataService(self.__google_cloud_storage_proxy, self.__google_bigquery_proxy,
-                                          self.__google_cloud_pub_sub_proxy)
+        self.__data_service = DataService(self.__google_cloud_storage_proxy, self.__google_bigquery_proxy, None)
         self.__data_service = TrackingDataService(self.__data_service)
         self.__data_service = LoggingDataService(self.__data_service)
         self.__data_service = MonitoringDataService(self.__data_service)

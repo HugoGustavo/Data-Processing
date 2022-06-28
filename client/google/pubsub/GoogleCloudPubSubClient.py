@@ -1,6 +1,6 @@
 from google.cloud import pubsub_v1
-from google.util.GoogleCloudPubSubUtil import GoogleCloudPubSubUtil
-from google.util.GoogleCloudPlataformUtil import GoogleCloudPlataformUtil
+from client.google.util.GoogleCloudPubSubUtil import GoogleCloudPubSubUtil
+from client.google.util.GoogleCloudPlataformUtil import GoogleCloudPlataformUtil
 
 
 class GoogleCloudPubSubClient(object):
