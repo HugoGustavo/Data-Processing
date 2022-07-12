@@ -30,12 +30,12 @@ Below is an example of python code accessing the batch and analytics paths, as w
     batch_path = data.get_batch_path()
     analytical_path = data.get_analytical_path()
     
-    content = data.get_content()
-    schema = content.get_schema()
-    dataframe = content.get_as_dataframe()
+    schema = data.get_content().get_schema()
+    dataframe = data.get_content().get_as_dataframe()
     
     print(batch_path)
     print(analytical_path)
+    print(schema)
     print(dataframe)
 ````
 
@@ -188,64 +188,35 @@ The following paths contain the additional python files:
 The URIs of jar files to add to the CLASSPATHs of the Python driver and tasks.
 Below are the following extra files and their locations for running the Job:
 
-| Files          | Source                                                                   |
-|----------------|--------------------------------------------------------------------------|
-| Spark BigQuery | gs://spark-lib/bigquery/spark-bigquery-with-dependencies_2.12-0.24.0.jar |
-| Spark Avro     | gs://us-central1-dataproc-sandbox/jars/spark-avro_2.12-3.1.2.jar         |
+| Files          | Source                                                                                          |
+|----------------|-------------------------------------------------------------------------------------------------|
+| Spark BigQuery | gs://spark-lib/bigquery/spark-bigquery-with-dependencies_2.12-0.24.0.jar                        |
+| Spark Avro     | https://repo1.maven.org/maven2/org/apache/spark/spark-avro_2.12/3.1.2/spark-avro_2.12-3.1.2.jar |
 
 ### Arguments
 The arguments to pass to the driver. Do not include arguments, such as --conf, that can be set as job properties,
 since a collision may occur that causes an incorrect job submission.  Next, we present the following arguments
 necessary to execute the Job:
 
-| Key             | Value                                 |
-|-----------------|---------------------------------------|
-| --configuration | A JSON dictionary with key and values |
-
-#### Configure a Job
-The --configuration argument needs to have the following json dictionary for it to work.
-Basically it will be necessary to configure the dictionary with the job, batch and stream keys.
-
-```json
-{
-  "job":{
-     "name": "name",
-     "allowDelete": "False",
-     "deduplication": "False"
-  },
-   "flow":{
-      "batch": {
-         "fromBucket" : "fromBucket", 
-         "toBucket" : "toBucket",
-         "company" : "company", 
-         "region" : "region", 
-         "businessUnit" : "businessUnit", 
-         "vicePresidency" : "vicePresidency", 
-         "domain" : "domain", 
-         "subdomain" : "subdomain", 
-         "context" : "context", 
-         "pipeline" : "pipeline", 
-         "datasource" : "datasource", 
-         "year" : "year", 
-         "month" : "month", 
-         "day" : "day", 
-         "execution" : "execution", 
-         "schema": {}
-      }, 
-      "analytical": {
-         "fromDataset": "fromDataset", 
-         "toDataset": "toDataset"
-      }
-   },
-   "processing":{
-      "sparkSession":{
-         "master": "master"
-      },
-      "sparkContext":{
-         "fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem", 
-         "fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
-         "mapreduce.fileoutputcommitter.marksuccessfuljobs": "false"
-      }
-   }
-}
-```
+| Key               | Value                                                                  |
+|-------------------|------------------------------------------------------------------------|
+| --id              | The job id                                                             |
+| --allowDelete     | Allow to delete original data (default=False)                          |
+| --deduplication   | Remove deduplication from original data (default=False)                |
+| --fromBucket      | The bucket with original data                                          |
+| --toBucket        | The bucket with modified data                                          |
+| --temporaryBucket | A temporary bucket for data manipulation                               |
+| --company         | A company that owns the data                                           |
+| --region          | The region where the data was extracted                                |
+| --businessUnit    | The business unit that the data belongs to                             |
+| --vicePresidency  | The vice presidency the data belongs to                                |
+| --domain          | The domain that the data belongs to                                    |
+| --subdomain       | The subdomain that the data belongs to                                 |
+| --context         | The context that the data belongs to (default=same as the subdomain)   |
+| --pipeline        | The pipeline that ran the job                                          |
+| --dataSource      | The source of the data (eg FTP, RDBMS and others)                      |
+| --year            | The year of execution of the job (default=current year)                |
+| --month           | The month of execution of the job (default=current month)              |
+| --day             | The day of execution of the job (default=current day)                  |
+| --execution       | A unique execution identifier (default=uuid version 4)                 |
+| --schema          | A string containing the interpretation of the data (columns and types) |

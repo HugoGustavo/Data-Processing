@@ -32,8 +32,8 @@ class JobConfigurationFactory(object):
 
         arguments = ArgumentsUtil.get()
         id = StringUtil.clean(DictionaryUtil.get(arguments, '--id', default=JobUtil.generate_name()))
-        allow_delete = DictionaryUtil.get(arguments, '--allowDelete', default=False)
-        deduplication = DictionaryUtil.get(arguments, '--deduplication', default=False)
+        allow_delete = StringUtil.contains_ignore_case('TRUE', DictionaryUtil.get(arguments, '--allowDelete', 'False'))
+        deduplication = StringUtil.contains_ignore_case('TRUE', DictionaryUtil.get(arguments, '--deduplication', 'False'))
 
         self.__configuration = JobConfiguration(id=id, allow_delete=allow_delete, deduplication=deduplication)
 
