@@ -21,17 +21,16 @@ class AnalyticalFlowConfigurationFactory(object):
         if ObjectUtil.is_not_none(self.__configuration):
             return self.__configuration
 
+        # arguments = ArgumentsUtil.get()
+        # configuration = DictionaryUtil.get(arguments, '--configuration', default='{}')
+        # configuration = StringUtil.to_dict(configuration)
+        # from_dataset = StringUtil.clean(DictionaryUtil.get(configuration, 'flow.analytical.fromDataset', ''))
+        # to_dataset = StringUtil.clean(DictionaryUtil.get(configuration, 'flow.analytical.toDataset', ''))
+
         arguments = ArgumentsUtil.get()
-        configuration = DictionaryUtil.get(arguments, '--configuration', default='{}')
-        configuration = StringUtil.to_dict(configuration)
-
-        from_dataset = StringUtil.clean(DictionaryUtil.get(configuration, 'flow.analytical.fromDataset', ''))
-        to_dataset = StringUtil.clean(DictionaryUtil.get(configuration, 'flow.analytical.toDataset', ''))
-
-        self.__configuration = AnalyticalFlowConfiguration(
-            from_dataset=from_dataset,
-            to_dataset=to_dataset
-        )
+        from_dataset = DictionaryUtil.get(arguments, '--fromDataset', default=None)
+        to_dataset = DictionaryUtil.get(arguments, '--toDataset', default=None)
+        self.__configuration = AnalyticalFlowConfiguration(from_dataset=from_dataset, to_dataset=to_dataset)
 
         Logger.debug(self.__configuration)
 

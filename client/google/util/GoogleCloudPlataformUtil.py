@@ -1,13 +1,28 @@
 import os
+import json
 
 
 class GoogleCloudPlataformUtil(object):
-
     @staticmethod
     def get_project_id():
-        result = os.getenv('GOOGLE_CLOUD_PROJECT')
-        result = str(result).strip()
-        return result
+        if 'GOOGLE_CLOUD_PROJECT' in os.environ:
+            project_id = os.environ['GOOGLE_CLOUD_PROJECT']
+            project_id = str(project_id).strip()
+            return project_id
+
+        if 'GCP_PROJECT' in os.environ:
+            project_id = os.environ['GCP_PROJECT']
+            project_id = str(project_id).strip()
+            return project_id
+
+        if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+            with open(os.environ['GOOGLE_APPLICATION_CREDENTIALS'], 'r') as service_account_file:
+                credentials = json.load(service_account_file)
+                project_id = credentials['project_id']
+                project_id = str(project_id).strip()
+                return project_id
+
+        raise Exception('Failed to determine project_id')
 
     @staticmethod
     def is_none(value):

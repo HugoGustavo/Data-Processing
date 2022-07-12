@@ -1,6 +1,5 @@
 from pyspark.sql import SparkSession
 from util.ObjectUtil import ObjectUtil
-from util.StringUtil import StringUtil
 from util.ArgumentsUtil import ArgumentsUtil
 from util.DictionaryUtil import DictionaryUtil
 from factory.job.JobConfigurationFactory import JobConfigurationFactory
@@ -21,24 +20,31 @@ class SparkSessionFactory(object):
         if ObjectUtil.is_not_none(self.__session):
             return self.__session
 
-        arguments = ArgumentsUtil.get()
-        configuration = DictionaryUtil.get(arguments, '--configuration', default='{}')
-        configuration = StringUtil.to_dict(configuration)
+        # arguments = ArgumentsUtil.get()
+        # configuration = DictionaryUtil.get(arguments, '--configuration', default='{}')
+        # configuration = StringUtil.to_dict(configuration)
 
-        master = DictionaryUtil.get(configuration, 'processing.sparkSession.master', 'local[1]')
+        # master = DictionaryUtil.get(configuration, 'processing.sparkSession.master', 'local[*]')
+        # app_name = JobConfigurationFactory.get_instance().build().get_id()
+        # temporary_bucket = DictionaryUtil.get(configuration, 'processing.sparkSession.temporaryGcsBucket', {})
+
+        arguments = ArgumentsUtil.get()
         app_name = JobConfigurationFactory.get_instance().build().get_id()
-        temporary_bucket = DictionaryUtil.get(configuration, 'processing.sparkSession.temporaryGcsBucket', {})
+        master = DictionaryUtil.get(arguments, '--masterServer', default='local[*]')
+        temporary_bucket = DictionaryUtil.get(arguments, '--temporaryBucket', default=None)
 
         self.__session = SparkSession.builder \
             .master(master) \
             .appName(app_name) \
             .getOrCreate()
 
-        self.__session.conf.set('temporaryGcsBucket', temporary_bucket)
+        # Default configurations for Spark work on Cloud Storage
+        spark_context = self.__session.sparkContext._jsc.hadoopConfiguration()
+        spark_context.set('fs.gs.impl', 'com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem')
+        spark_context.set('fs.AbstractFileSystem.gs.impl', 'com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS')
+        spark_context.set('mapreduce.fileoutputcommitter.marksuccessfuljobs', 'false')
 
-        spark_context_configuration = self.__session.sparkContext._jsc.hadoopConfiguration()
-        parameters = DictionaryUtil.get(configuration, 'processing.sparkContext', {})
-        for (key, value) in parameters.items():
-            spark_context_configuration.set(key, value)
+        # Default configurations for Spark work on BigQuery
+        self.__session.conf.set('temporaryGcsBucket', temporary_bucket)
 
         return self.__session

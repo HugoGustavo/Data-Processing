@@ -22,19 +22,20 @@ class JobConfigurationFactory(object):
         if ObjectUtil.is_not_none(self.__configuration):
             return self.__configuration
 
+        # arguments = ArgumentsUtil.get()
+        # configuration = DictionaryUtil.get(arguments, '--configuration', default='{}')
+        # configuration = StringUtil.to_dict(configuration)
+
+        # id = StringUtil.clean(DictionaryUtil.get(configuration, 'job.id', JobUtil.generate_name()))
+        # allow_delete = StringUtil.clean(DictionaryUtil.get(configuration, 'job.allowDelete', False))
+        # deduplication = StringUtil.clean(DictionaryUtil.get(configuration, 'job.deduplication', False))
+
         arguments = ArgumentsUtil.get()
-        configuration = DictionaryUtil.get(arguments, '--configuration', default='{}')
-        configuration = StringUtil.to_dict(configuration)
+        id = StringUtil.clean(DictionaryUtil.get(arguments, '--id', default=JobUtil.generate_name()))
+        allow_delete = DictionaryUtil.get(arguments, '--allowDelete', default=False)
+        deduplication = DictionaryUtil.get(arguments, '--deduplication', default=False)
 
-        id = StringUtil.clean(DictionaryUtil.get(configuration, 'job.id', JobUtil.generate_name()))
-        allow_delete = StringUtil.clean(DictionaryUtil.get(configuration, 'job.allowDelete', False))
-        deduplication = StringUtil.clean(DictionaryUtil.get(configuration, 'job.deduplication', False))
-
-        self.__configuration = JobConfiguration(
-            id=id,
-            allow_delete=allow_delete,
-            deduplication=deduplication
-        )
+        self.__configuration = JobConfiguration(id=id, allow_delete=allow_delete, deduplication=deduplication)
 
         Logger.debug(self.__configuration)
 

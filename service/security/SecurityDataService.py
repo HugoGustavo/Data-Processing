@@ -2,6 +2,7 @@ from util.Logger import Logger
 from util.ListUtil import ListUtil
 from util.StringUtil import StringUtil
 from factory.job.JobConfigurationFactory import JobConfigurationFactory
+from factory.flow.BatchFlowConfigurationFactory import BatchFlowConfigurationFactory
 
 
 class SecurityDataService(object):
@@ -22,9 +23,10 @@ class SecurityDataService(object):
             Logger.warn(message)
             return None
 
+        batch_flow_configuration = BatchFlowConfigurationFactory.get_instance().build()
         for item in ListUtil.get_as_list(data):
             batch_path = item.get_batch_path()
-            batch_path.set_bucket(StringUtil.clean(job_configuration.get_from_bucket()))
+            batch_path.set_bucket(StringUtil.clean(batch_flow_configuration.get_from_bucket()))
 
         result = self.__data_service.delete(data)
         return result
@@ -32,16 +34,17 @@ class SecurityDataService(object):
     def delete_all(self, data):
         job_configuration = JobConfigurationFactory.get_instance().build()
 
-        is_not_allowed_to_delete = job_configuration.is_allow_delete()
+        is_not_allowed_to_delete = not job_configuration.is_allow_delete()
         if is_not_allowed_to_delete:
             job_id = job_configuration.get_id()
             message = '{0} does not have permissions to delete data.'.format(job_id)
             Logger.warn(message)
             return None
 
+        batch_flow_configuration = BatchFlowConfigurationFactory.get_instance().build()
         for item in ListUtil.get_as_list(data):
             batch_path = item.get_batch_path()
-            batch_path.set_bucket(StringUtil.clean(job_configuration.get_from_bucket()))
+            batch_path.set_bucket(StringUtil.clean(batch_flow_configuration.get_from_bucket()))
 
         result = self.__data_service.delete_all(data)
         return result

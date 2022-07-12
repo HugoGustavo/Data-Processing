@@ -3,6 +3,12 @@ import json
 
 
 class StringUtil:
+    @staticmethod
+    def format(pattern, *arguments):
+        if pattern is None or arguments is None:
+            return None
+        result = str(pattern).format(*arguments)
+        return result
 
     @staticmethod
     def join(separator, *arguments):
