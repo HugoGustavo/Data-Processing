@@ -205,6 +205,8 @@ necessary to execute the Job:
 | --deduplication   | Remove deduplication from original data (default=False)                |
 | --fromBucket      | The bucket with original data                                          |
 | --toBucket        | The bucket with modified data                                          |
+| --fromDataset     | The dataset with original data                                         |
+| --toDataset       | The dataset with modified data                                         |
 | --temporaryBucket | A temporary bucket for data manipulation                               |
 | --company         | A company that owns the data                                           |
 | --region          | The region where the data was extracted                                |
